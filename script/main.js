@@ -1,36 +1,47 @@
 const fetchData = () => {
   fetch("customize.json")
-    .then(data => data.json())
+    .then(response => response.json())
     .then(data => {
       Object.keys(data).forEach(key => {
         if (data[key] !== "") {
           if (key === "imagePath") {
             document.querySelector(`[data-node-name*="${key}"]`).setAttribute("src", data[key]);
           } else if (key === "musicPath") {
-            const audio = document.getElementById("bg-music");
-            audio.src = data[key];
+            document.getElementById("bg-music").src = data[key]; // Set music file
           } else {
             document.querySelector(`[data-node-name*="${key}"]`).innerText = data[key];
           }
         }
       });
 
-      // Run animations after data is loaded
+      // Run animations after loading data
       animationTimeline();
+
+      // Attempt to play music automatically
+      playBackgroundMusic();
     });
 };
 
-// Autoplay music handling
-document.addEventListener("DOMContentLoaded", () => {
+// Function to handle background music
+const playBackgroundMusic = () => {
   const audio = document.getElementById("bg-music");
 
   // Try to play immediately
-  audio.play().catch(() => {
-    console.log("Autoplay blocked. Waiting for user interaction.");
+  const playPromise = audio.play();
+  
+  if (playPromise !== undefined) {
+    playPromise
+      .then(() => console.log("Music is playing"))
+      .catch(() => {
+        console.log("Autoplay blocked. Waiting for user interaction.");
+        
+        // Play music on first user interaction
+        document.body.addEventListener("click", () => {
+          audio.play();
+        }, { once: true });
+      });
+  }
+};
 
-    // Play on first user interaction
-    document.body.addEventListener("click", () => {
-      audio.play();
-    }, { once: true });
-  });
-});
+// Load data and start the process
+document.addEventListener("DOMContentLoaded", fetchData);
