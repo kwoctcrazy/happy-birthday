@@ -14,15 +14,15 @@ const fetchData = () => {
         }
       });
 
-      // Run animations after loading data
+      // ✅ Ensure animations start first!
       animationTimeline();
 
-      // Attempt to play music automatically
-      playBackgroundMusic();
+      // ✅ Start background music in parallel!
+      setTimeout(playBackgroundMusic, 500); // Small delay to avoid blocking animations
     });
 };
 
-// Function to handle background music
+// 🔥 Function to play background music
 const playBackgroundMusic = () => {
   const audio = document.getElementById("bg-music");
 
@@ -31,17 +31,18 @@ const playBackgroundMusic = () => {
   
   if (playPromise !== undefined) {
     playPromise
-      .then(() => console.log("Music is playing"))
+      .then(() => console.log("🎶 Music started playing"))
       .catch(() => {
-        console.log("Autoplay blocked. Waiting for user interaction.");
+        console.log("🚫 Autoplay blocked. Waiting for user interaction...");
         
-        // Play music on first user interaction
-        document.body.addEventListener("click", () => {
+        // Play music on first user interaction (but animations are already running)
+        document.addEventListener("click", () => {
           audio.play();
+          console.log("🎵 Music started after user interaction.");
         }, { once: true });
       });
   }
 };
 
-// Load data and start the process
+// ✅ Run everything when the page loads
 document.addEventListener("DOMContentLoaded", fetchData);
