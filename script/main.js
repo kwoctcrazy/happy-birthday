@@ -14,34 +14,16 @@ const fetchData = () => {
         }
       });
 
-      // ✅ Ensure animations start first!
+      // ✅ Ensure animations start immediately!
       animationTimeline();
 
-      // ✅ Start background music in parallel!
-      setTimeout(playBackgroundMusic, 500); // Small delay to avoid blocking animations
+      // ✅ Start music after a slight delay
+      setTimeout(() => {
+        document.getElementById("bg-music").play().catch(error => {
+          console.log("🔇 Autoplay blocked. Check browser settings.");
+        });
+      }, 500); // Small delay to allow the page to render first
     });
-};
-
-// 🔥 Function to play background music
-const playBackgroundMusic = () => {
-  const audio = document.getElementById("bg-music");
-
-  // Try to play immediately
-  const playPromise = audio.play();
-  
-  if (playPromise !== undefined) {
-    playPromise
-      .then(() => console.log("🎶 Music started playing"))
-      .catch(() => {
-        console.log("🚫 Autoplay blocked. Waiting for user interaction...");
-        
-        // Play music on first user interaction (but animations are already running)
-        document.addEventListener("click", () => {
-          audio.play();
-          console.log("🎵 Music started after user interaction.");
-        }, { once: true });
-      });
-  }
 };
 
 // ✅ Run everything when the page loads
